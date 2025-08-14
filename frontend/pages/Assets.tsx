@@ -4,7 +4,7 @@ import backend from '~backend/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Wrench } from 'lucide-react';
+import { Plus, Edit, Trash2, Wrench, Building2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import AssetForm from '../components/AssetForm';
 import MaintenanceForm from '../components/MaintenanceForm';
