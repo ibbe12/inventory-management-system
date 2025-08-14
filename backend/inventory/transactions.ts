@@ -9,6 +9,7 @@ export interface CreateTransactionRequest {
   referenceNumber?: string;
   notes?: string;
   createdBy?: string;
+  staffId?: number;
 }
 
 export interface ListTransactionsResponse {
@@ -31,13 +32,24 @@ export const createTransaction = api<CreateTransactionRequest, InventoryTransact
         throw APIError.notFound("Product not found");
       }
 
+      // Verify staff exists if staffId is provided
+      if (req.staffId) {
+        const staff = await tx.queryRow`
+          SELECT id FROM staff WHERE id = ${req.staffId}
+        `;
+        
+        if (!staff) {
+          throw APIError.notFound("Staff member not found");
+        }
+      }
+
       // Create transaction record
       const transaction = await tx.queryRow<InventoryTransaction>`
-        INSERT INTO inventory_transactions (product_id, transaction_type, quantity, reference_number, notes, created_by)
-        VALUES (${req.productId}, ${req.transactionType}, ${req.quantity}, ${req.referenceNumber}, ${req.notes}, ${req.createdBy})
+        INSERT INTO inventory_transactions (product_id, transaction_type, quantity, reference_number, notes, created_by, staff_id)
+        VALUES (${req.productId}, ${req.transactionType}, ${req.quantity}, ${req.referenceNumber}, ${req.notes}, ${req.createdBy}, ${req.staffId})
         RETURNING id, product_id as "productId", transaction_type as "transactionType", 
                   quantity, reference_number as "referenceNumber", notes, 
-                  created_at as "createdAt", created_by as "createdBy"
+                  created_at as "createdAt", created_by as "createdBy", staff_id as "staffId"
       `;
 
       if (!transaction) {
@@ -91,7 +103,7 @@ export const listTransactions = api<void, ListTransactionsResponse>(
     const transactions = await inventoryDB.queryAll<InventoryTransaction>`
       SELECT id, product_id as "productId", transaction_type as "transactionType", 
              quantity, reference_number as "referenceNumber", notes, 
-             created_at as "createdAt", created_by as "createdBy"
+             created_at as "createdAt", created_by as "createdBy", staff_id as "staffId"
       FROM inventory_transactions
       ORDER BY created_at DESC
     `;
@@ -107,7 +119,7 @@ export const getProductTransactions = api<{ productId: number }, ListTransaction
     const transactions = await inventoryDB.queryAll<InventoryTransaction>`
       SELECT id, product_id as "productId", transaction_type as "transactionType", 
              quantity, reference_number as "referenceNumber", notes, 
-             created_at as "createdAt", created_by as "createdBy"
+             created_at as "createdAt", created_by as "createdBy", staff_id as "staffId"
       FROM inventory_transactions
       WHERE product_id = ${productId}
       ORDER BY created_at DESC

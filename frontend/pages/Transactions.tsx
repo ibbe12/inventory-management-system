@@ -4,7 +4,7 @@ import backend from '~backend/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
+import { Plus, ArrowUp, ArrowDown, RotateCcw, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import TransactionForm from '../components/TransactionForm';
 import { formatDate } from '../utils/format';
@@ -23,6 +23,11 @@ export default function Transactions() {
   const { data: productsData } = useQuery({
     queryKey: ['products'],
     queryFn: () => backend.inventory.listProducts(),
+  });
+
+  const { data: staffData } = useQuery({
+    queryKey: ['staff'],
+    queryFn: () => backend.inventory.listStaff(),
   });
 
   const handleFormClose = () => {
@@ -58,6 +63,11 @@ export default function Transactions() {
   const getProductName = (productId: number) => {
     const product = productsData?.products.find(p => p.id === productId);
     return product ? `${product.name} (${product.sku})` : `Product ID: ${productId}`;
+  };
+
+  const getStaffName = (staffId: number) => {
+    const staff = staffData?.staff.find(s => s.id === staffId);
+    return staff ? `${staff.firstName} ${staff.lastName} (${staff.employeeId})` : `Staff ID: ${staffId}`;
   };
 
   if (isLoading) {
@@ -121,8 +131,19 @@ export default function Transactions() {
                 </div>
               </div>
 
-              {transaction.notes && (
+              {transaction.staffId && (
                 <div className="mt-3 pt-3 border-t">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <strong>Issued to:</strong> {getStaffName(transaction.staffId)}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {transaction.notes && (
+                <div className={`mt-3 ${transaction.staffId ? '' : 'pt-3 border-t'}`}>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     <strong>Notes:</strong> {transaction.notes}
                   </p>

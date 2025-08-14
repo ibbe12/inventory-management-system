@@ -32,6 +32,7 @@ interface TransactionFormData {
   referenceNumber: string;
   notes: string;
   createdBy: string;
+  staffId: number | null;
 }
 
 export default function TransactionForm({ isOpen, onClose }: TransactionFormProps) {
@@ -52,8 +53,19 @@ export default function TransactionForm({ isOpen, onClose }: TransactionFormProp
     queryFn: () => backend.inventory.listProducts(),
   });
 
+  const { data: staffData } = useQuery({
+    queryKey: ['active-staff'],
+    queryFn: () => backend.inventory.listActiveStaff(),
+  });
+
   const createMutation = useMutation({
-    mutationFn: (data: TransactionFormData) => backend.inventory.createTransaction(data),
+    mutationFn: (data: TransactionFormData) => {
+      const payload = {
+        ...data,
+        staffId: data.staffId || undefined,
+      };
+      return backend.inventory.createTransaction(payload);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -158,6 +170,25 @@ export default function TransactionForm({ isOpen, onClose }: TransactionFormProp
               <p className="text-sm text-red-600">{errors.quantity.message}</p>
             )}
           </div>
+
+          {transactionType === 'ISSUE' && (
+            <div className="space-y-2">
+              <Label htmlFor="staffId">Issued To (Staff Member)</Label>
+              <Select onValueChange={(value) => setValue('staffId', value ? parseInt(value) : null)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select staff member (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
+                  {staffData?.staff.map((member) => (
+                    <SelectItem key={member.id} value={member.id.toString()}>
+                      {member.firstName} {member.lastName} ({member.employeeId})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="referenceNumber">Reference Number</Label>

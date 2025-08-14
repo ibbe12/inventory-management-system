@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Transactions from './pages/Transactions';
 import Assets from './pages/Assets';
+import Staff from './pages/Staff';
 import Reports from './pages/Reports';
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/assets" element={<Assets />} />
+            <Route path="/staff" element={<Staff />} />
             <Route path="/reports" element={<Reports />} />
           </Routes>
         </Layout>

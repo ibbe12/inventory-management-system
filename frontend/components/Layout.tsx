@@ -7,7 +7,8 @@ import {
   Building2, 
   BarChart3, 
   Home,
-  Menu
+  Menu,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Products', href: '/products', icon: Package },
   { name: 'Transactions', href: '/transactions', icon: ArrowUpDown },
   { name: 'Assets', href: '/assets', icon: Building2 },
+  { name: 'Staff', href: '/staff', icon: Users },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];
 

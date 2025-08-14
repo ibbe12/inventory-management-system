@@ -30,6 +30,7 @@ export interface InventoryTransaction {
   notes?: string;
   createdAt: Date;
   createdBy?: string;
+  staffId?: number;
 }
 
 export interface Asset {
@@ -62,6 +63,21 @@ export interface AssetMaintenance {
   performedBy?: string;
   nextDueDate?: Date;
   createdAt: Date;
+}
+
+export interface Staff {
+  id: number;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  department?: string;
+  position?: string;
+  hireDate?: Date;
+  status: 'ACTIVE' | 'INACTIVE' | 'TERMINATED';
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ProductWithInventory extends Product {
