@@ -1,0 +1,1 @@
+{"id": "inventory-management-system-ahq2", "lang": "typescript"}
